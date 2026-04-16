@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tasheel (تسهيل)
 
-## Getting Started
+Enterprise **service management** demo: **Admin** portal (services, forms, workflows) and **Requester** portal (catalog, submissions, request tracking). Data is **mocked in-browser** via Zustand + `localStorage` persistence.
 
-First, run the development server:
+## Requirements
+
+- Node.js 20+ recommended  
+- npm (ships with Node)
+
+## Setup
 
 ```bash
+cd tasheel
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App URL: **http://localhost:3000**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Next.js dev server (Turbopack) |
+| `npm run build` | Production build |
+| `npm run start` | Run production build |
+| `npm run lint` | ESLint |
 
-## Learn More
+For CI-style checks locally:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx eslint "app" "components" "lib" --max-warnings 0
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure (high level)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `app/admin/` — Admin routes (services, studio, workflow designer, requests)  
+- `app/requester/` — Requester catalog, service form, my requests  
+- `components/admin/` — Form builder, workflow designer, service studio steps  
+- `components/shared/` — Shared UI (sidebar, status badges, request form fields)  
+- `lib/store.ts` — Zustand store  
+- `lib/types.ts` — TypeScript contracts  
+- `lib/mock-data.ts` — Seed services, workflows, requests  
 
-## Deploy on Vercel
+Design/reference bundles may appear under `service_LC/`, `desgin/`, or `BPMN/`; the **active app** is the Next.js tree above. `tsconfig.json` excludes `service_LC` from typechecking so `next build` stays clean.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Repo root **`../README.md`** — monorepo overview  
+- **`AGENTS.md`** (repo root) — agent team and skills map  
+- **`01-architecture.md`**, **`02-cursor-prompts.md`** — additional context if present  
+
+## License
+
+Private / demo — add a `LICENSE` when redistributing.

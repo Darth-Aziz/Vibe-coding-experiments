@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Env & secrets (root and nested)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+# Optional local scratch (uncomment if you never want these committed)
+# .tmp-awesome-cursor-skills/
