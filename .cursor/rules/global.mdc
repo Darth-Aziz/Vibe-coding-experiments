@@ -1,0 +1,58 @@
+---
+description: Global Tasheel project rules — always active
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Tasheel Project Rules
+
+## Project
+Tasheel (تسهيل) is an enterprise service management platform with two portals:
+- Admin Portal: create services, build forms, design BPMN workflows, publish
+- Requester Portal: browse catalog, submit requests, track status
+
+## Tech Stack
+- Next.js 14 (App Router, TypeScript strict mode)
+- Tailwind CSS 3.4
+- shadcn/ui (New York style, Slate base)
+- Zustand with persist middleware (localStorage)
+- bpmn-js 17.x for workflow designer
+- @dnd-kit for drag-and-drop form builder
+- Lucide React for icons
+- date-fns for date formatting
+
+## Code Conventions
+- Use "use client" directive only when component uses hooks, event handlers, or browser APIs
+- Prefer server components by default
+- Use TypeScript strict mode — no `any` types, no type assertions unless unavoidable
+- All components use named exports, not default exports
+- File names: kebab-case (service-card.tsx, not ServiceCard.tsx)
+- Import paths use @/ alias (e.g., @/components/ui/button)
+- All state management through Zustand store at @/lib/store.ts
+- No prop drilling beyond 2 levels — use Zustand instead
+- CSS: Tailwind utility classes only, no custom CSS files
+- Colors: use Tailwind's slate, blue, emerald, amber, red palettes
+- All interactive elements need hover/focus/active states
+
+## Component Patterns
+- Use shadcn/ui components as base — never rebuild what shadcn provides
+- Wrap shadcn components for project-specific behavior (e.g., StatusBadge wraps Badge)
+- Form inputs: always include label, placeholder, and error state
+- Tables: always include empty state, loading state, and pagination where applicable
+- Cards: consistent padding (p-6), border (border), rounded (rounded-lg)
+- Buttons: always specify variant and size explicitly
+
+## Data Patterns
+- All data flows through Zustand store
+- Mock data lives in @/lib/mock-data.ts
+- Types live in @/lib/types.ts
+- Never hardcode data in components — always reference store or mock data
+- Ticket numbers format: TSH-YYYY-NNNN (e.g., TSH-2026-0042)
+- Dates: use date-fns format, display as "Apr 15, 2026"
+
+## File Organization
+- Pages: app/[portal]/[feature]/page.tsx
+- Components: components/[portal]/[component-name].tsx
+- Shared components: components/shared/[component-name].tsx
+- UI primitives: components/ui/ (shadcn — do not modify directly)
+- Utilities: lib/utils.ts, lib/types.ts, lib/store.ts, lib/mock-data.ts

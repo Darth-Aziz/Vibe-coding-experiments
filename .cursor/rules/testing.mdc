@@ -1,0 +1,36 @@
+---
+description: Testing standards and quality gates for Tasheel
+globs: ["app/**/*", "components/**/*", "lib/**/*"]
+---
+
+# Testing and Quality Gates
+
+## Mandatory Quality Gate
+- Every feature change MUST include a test plan before implementation is considered complete.
+- Every changed user flow MUST include happy path + at least 2 edge-case scenarios.
+- Every bug fix MUST include a regression scenario in the test plan.
+
+## Minimum Test Expectations
+- **Unit scope (logic-heavy utilities/store actions):** expected behavior checks for success and failure paths
+- **Integration scope (cross-component flow):** verify data flow from store to UI and back
+- **Smoke scope (critical UX):** app starts, navigation works, key flow completes without errors
+
+## Required States
+For each modified UI surface, verify:
+- Loading state
+- Empty state
+- Error state
+- Success state
+
+## Definition of Done for Testing
+A feature is complete only when:
+1. Acceptance criteria are fully mapped to test scenarios
+2. No critical or major issues remain open
+3. No console/runtime errors are observed in affected flows
+4. QA report includes explicit pass/fail results
+
+## Non-Negotiable Rules
+- MUST test both portals when shared state or shared components change
+- MUST verify persisted store behavior after page refresh for state-related changes
+- MUST test keyboard interaction for newly added interactive elements
+- MUST include reproduction steps for every failed scenario

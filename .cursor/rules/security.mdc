@@ -1,0 +1,32 @@
+---
+description: Frontend security defaults and secure coding checks
+globs: ["app/**/*", "components/**/*", "lib/**/*"]
+---
+
+# Security Rules
+
+## Input and Output Safety
+- All user-provided input MUST be validated before state write or workflow transition.
+- `dangerouslySetInnerHTML` MUST NOT be used unless explicitly justified and sanitized.
+- Generated labels or text from dynamic data MUST render as plain text, not interpreted HTML.
+
+## State and Data Handling
+- localStorage MUST contain non-sensitive demo data only.
+- Secrets, API keys, or credentials MUST NEVER be committed.
+- Mock data MUST avoid realistic PII patterns unless explicitly anonymized.
+
+## Dependency and Runtime Safety
+- New dependencies SHOULD be actively maintained and necessary.
+- Dynamic execution APIs (`eval`, `Function`) are prohibited.
+- BPMN XML handling MUST treat XML as untrusted input; do not execute embedded scripts or custom code paths.
+
+## Non-Negotiable Rules
+- MUST enforce sensible input length constraints on free-text fields.
+- MUST avoid leaking internal implementation details in user-facing errors.
+- MUST report security findings with severity and remediation guidance.
+
+## Definition of Done for Security
+1. No direct XSS vectors identified in modified code
+2. Input constraints are present for modified forms
+3. No secrets or sensitive tokens introduced
+4. Security review output includes severity + remediation

@@ -1,0 +1,50 @@
+---
+description: Form builder and dynamic form patterns
+globs: ["**/*form*", "**/*field*", "**/form-builder*"]
+---
+
+# Form Builder Rules
+
+## Form Field Types
+Supported types: text, textarea, number, email, select, radio, checkbox, date, file
+
+## Form Builder Architecture
+- Three-panel layout: palette (left w-48) | preview (center flex) | config (right w-72)
+- Drag from palette to preview using @dnd-kit
+- Click field in preview to select → show config in right panel
+- Field order determined by sortable list position
+
+## @dnd-kit Setup
+```tsx
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+```
+
+## Dynamic Form Rendering
+- Read FormField[] from service config
+- Map each field.type to the correct shadcn component:
+  - text → Input
+  - textarea → Textarea
+  - number → Input type="number"
+  - email → Input type="email"
+  - select → Select with SelectItem for each option
+  - radio → RadioGroup with RadioGroupItem for each option
+  - checkbox → multiple Checkbox components
+  - date → Calendar with Popover
+  - file → Input type="file"
+- Handle form state with React useState<Record<string, unknown>>
+- Validate required fields before submit
+
+## Field Config Schema
+```typescript
+interface FormField {
+  id: string;
+  type: FieldType;
+  label: string;
+  placeholder?: string;
+  required: boolean;
+  options?: string[];
+  order: number;
+}
+```

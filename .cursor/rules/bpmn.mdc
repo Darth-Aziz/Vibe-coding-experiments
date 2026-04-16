@@ -1,0 +1,51 @@
+---
+description: BPMN workflow integration patterns
+globs: ["**/*workflow*", "**/*bpmn*", "**/workflow-canvas*"]
+---
+
+# BPMN Integration Rules
+
+## bpmn-js Setup
+- Use BpmnModeler (not Viewer) for admin — full editing capability
+- Import CSS in the workflow page component:
+  - 'bpmn-js/dist/assets/diagram-js.css'
+  - 'bpmn-js/dist/assets/bpmn-js.css'
+  - 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'
+- Initialize modeler in useEffect with ref to container div
+- ALWAYS destroy modeler in cleanup function
+
+## Canvas Component Pattern
+```tsx
+"use client";
+import { useRef, useEffect } from "react";
+import BpmnModeler from "bpmn-js/lib/Modeler";
+
+export function WorkflowCanvas({ xml, onSave }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const modelerRef = useRef<BpmnModeler | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const modeler = new BpmnModeler({ container: containerRef.current });
+    modelerRef.current = modeler;
+    modeler.importXML(xml);
+    return () => { modeler.destroy(); };
+  }, []);
+
+  const handleSave = async () => {
+    const { xml } = await modelerRef.current!.saveXML({ format: true });
+    onSave(xml);
+  };
+}
+```
+
+## XML Handling
+- Default template: Start Event → User Task (Submit) → User Task (Review) → User Task (Approve) → End Event
+- Extract stages with: parse XML → find bpmn:UserTask elements → map to WorkflowStage[]
+- Store raw XML string in workflow.bpmnXml
+- Never manually construct BPMN XML — always use modeler API
+
+## Workflow State
+- Workflow data lives in Zustand store under workflows[]
+- Link workflow to service via service.workflowId
+- When request advances, update request.currentStage and add to request.history[]

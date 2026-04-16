@@ -1,0 +1,48 @@
+---
+description: Component design patterns for Tasheel UI
+globs: ["app/**/*", "components/**/*"]
+---
+
+# Component Design Patterns
+
+## shadcn/ui Usage
+- Import from @/components/ui/[component]
+- Available components: button, card, input, label, select, table, tabs, badge, dialog, dropdown-menu, separator, toast, sheet, command, popover, calendar, checkbox, radio-group, textarea, switch, avatar, tooltip, progress
+
+## Layout Patterns
+- Admin layout: fixed sidebar (240px, bg-slate-900) + scrollable main content
+- Requester layout: fixed top nav (h-14, bg-white, border-b) + scrollable main content
+- Content max-width: max-w-7xl mx-auto
+- Page padding: px-6 py-8
+- Section spacing: space-y-6
+
+## Card Patterns
+```tsx
+<Card className="border rounded-lg shadow-sm">
+  <CardHeader className="pb-3">
+    <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+    <CardDescription>{description}</CardDescription>
+  </CardHeader>
+  <CardContent>{children}</CardContent>
+</Card>
+```
+
+## Status Badge Pattern
+```tsx
+const statusConfig = {
+  draft: { label: "Draft", className: "bg-amber-100 text-amber-700" },
+  published: { label: "Published", className: "bg-emerald-100 text-emerald-700" },
+  submitted: { label: "Submitted", className: "bg-blue-100 text-blue-700" },
+  in_review: { label: "In Review", className: "bg-amber-100 text-amber-700" },
+  approved: { label: "Approved", className: "bg-emerald-100 text-emerald-700" },
+  rejected: { label: "Rejected", className: "bg-red-100 text-red-700" },
+};
+```
+
+## Data Table Pattern
+- Always use shadcn Table component
+- Include column headers with sort indicators
+- Row hover: hover:bg-slate-50
+- Action column: DropdownMenu with edit/delete/view options
+- Empty state: centered icon + text + action button
+- Loading state: skeleton rows matching column count

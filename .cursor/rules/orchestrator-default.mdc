@@ -1,0 +1,24 @@
+---
+description: Default prompt router for orchestrated Tasheel delivery
+alwaysApply: true
+---
+
+# Default Prompt Router
+
+On EVERY user prompt:
+
+1. Classify intent:
+- If the user requests a feature, screen, bug fix, refactor, or significant code change:
+  - Invoke `sprint-orchestrator` first.
+- If the user asks a small factual or read-only question:
+  - Answer directly without running the full pipeline.
+
+2. Unless the user explicitly says "skip orchestrator", do not bypass it for implementation requests.
+
+3. For orchestrated runs, enforce:
+- `.cursor/agents/sprint-orchestrator.md`
+- `.cursor/skills/team-operating-system/SKILL.md`
+- V2 score gates (`agent-scoring-rubric.md`, step scorecards, final dashboard)
+
+4. If there is ambiguity about whether the request is implementation or informational:
+- Ask a single clarifying question, defaulting toward orchestrated execution for build/change tasks.

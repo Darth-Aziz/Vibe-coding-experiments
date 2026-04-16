@@ -1,0 +1,27 @@
+{
+  "enabled": false,
+  "workspace_name": "REPLACE_ME",
+  "sprint_runs_data_source_id": "REPLACE_ME",
+  "product_backlog_data_source_id": "REPLACE_ME",
+  "feature_property_name": "Feature",
+  "status_property_name": "Status",
+  "build_property_name": "Build",
+  "verdict_property_name": "Verdict",
+  "artifacts_path_property_name": "Artifacts Path",
+  "agents_run_property_name": "Agents Run",
+  "blocking_issues_property_name": "Blocking Issues",
+  "files_changed_property_name": "Files Changed",
+  "date_property_name": "Date",
+  "defaults": {
+    "in_progress_status": "In Progress",
+    "done_status": "Done",
+    "blocked_status": "Blocked",
+    "build_not_run": "Not Run",
+    "build_pass": "Pass",
+    "build_fail": "Fail",
+    "verdict_pending": "Pending",
+    "verdict_approved": "Approved",
+    "verdict_blocked": "Blocked"
+  },
+  "notes": "Set enabled=true after IDs are configured and validated."
+}

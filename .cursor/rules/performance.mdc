@@ -1,0 +1,32 @@
+---
+description: Performance budgets and frontend efficiency rules
+globs: ["app/**/*", "components/**/*", "lib/**/*"]
+---
+
+# Performance Rules
+
+## Core Budgets
+- Initial route render SHOULD complete in under 2s on a standard developer laptop.
+- Interactive list/table views MUST avoid unnecessary full-tree re-renders.
+- Expensive computations MUST be memoized or moved outside render paths.
+
+## React and Zustand Patterns
+- MUST use store selectors (`useTasheelStore(s => s.slice)`) instead of full-store subscriptions.
+- MUST avoid inline object/array creation in deeply repeated render paths when avoidable.
+- SHOULD use `useMemo`/`useCallback` only when they prevent measurable re-render cost.
+
+## UI Rendering Rules
+- Tables with potentially large datasets MUST include pagination or virtualization strategy.
+- Workflow and form-builder canvases MUST clean up subscriptions/listeners on unmount.
+- Icons, badges, and status components SHOULD be lightweight wrappers around shadcn primitives.
+
+## Non-Negotiable Rules
+- MUST not introduce blocking synchronous loops in render or event handlers.
+- MUST not perform date parsing/formatting repeatedly inside tight map loops without caching.
+- MUST verify no memory leaks for bpmn-js modeler lifecycle and drag-and-drop listeners.
+
+## Definition of Done for Performance
+1. No obvious unnecessary re-renders in modified components
+2. No long-running work in render body
+3. No leaked modeler/listener/timer instances
+4. Key list/canvas interactions remain responsive

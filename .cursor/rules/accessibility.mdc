@@ -1,0 +1,32 @@
+---
+description: Accessibility and RTL readiness baseline for Tasheel
+globs: ["app/**/*", "components/**/*"]
+---
+
+# Accessibility and RTL Rules
+
+## Keyboard and Focus
+- All interactive elements MUST be keyboard reachable and operable.
+- Visible focus state MUST exist (`focus-visible` styling) for every interactive control.
+- Dialogs, popovers, and menus MUST support Escape and proper focus return.
+
+## Semantic and Screen Reader Requirements
+- Inputs MUST be associated with labels.
+- Icon-only controls MUST include `aria-label`.
+- Tables MUST include semantic headers and understandable column labels.
+- Status/error/success updates SHOULD be announced via live regions where applicable.
+
+## Contrast and Information Clarity
+- Text MUST meet WCAG AA minimum contrast expectations.
+- State MUST NOT be conveyed by color alone; include text or icon cues.
+- Required fields MUST be clearly indicated and described in accessible terms.
+
+## RTL Readiness
+- Prefer logical direction utilities and start/end alignment over left/right hardcoding.
+- Directional icons SHOULD be reviewed for RTL flipping behavior.
+
+## Definition of Done for Accessibility
+1. Keyboard path tested for modified interactions
+2. No missing labels for newly added controls
+3. Focus visibility confirmed
+4. RTL-sensitive spacing/alignment considered
