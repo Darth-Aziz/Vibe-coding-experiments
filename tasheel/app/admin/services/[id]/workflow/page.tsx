@@ -3,14 +3,13 @@
 import { use } from "react";
 import { useTasheelStore } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { WorkflowFlowDesigner } from "@/components/admin/workflow-flow-designer";
 import { extractStagesFromFlow } from "@/lib/workflow-graph-utils";
 import { resolveWorkflowInitialDefinition } from "@/lib/workflow-resolve-initial";
 import type { WorkflowFlowDefinition } from "@/lib/workflow-flow-types";
-import Link from "next/link";
-import { ArrowLeft, ChevronRight, GitBranch, Link2 } from "lucide-react";
+import { GitBranch, Link2 } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/page-header";
 
 export default function WorkflowDesignerPage({
   params,
@@ -64,41 +63,36 @@ export default function WorkflowDesignerPage({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href={`/admin/services/${id}`}>
-            <Button variant="ghost" size="sm" className="h-8">
-              <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
-            </Button>
-          </Link>
-          <div className="h-5 w-px bg-border" />
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Link href="/admin/services" className="transition-colors hover:text-foreground">
-              Services
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <Link href={`/admin/services/${id}`} className="transition-colors hover:text-foreground">
-              {service.name}
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-foreground">Workflow</span>
+      <PageHeader
+        breadcrumb={[
+          { label: "Services", href: "/admin/services" },
+          { label: service.name, href: `/admin/services/${id}` },
+          { label: "Workflow" },
+        ]}
+        title="Workflow designer"
+        description={`Edit the BPMN-style flow for ${service.name}. Saving publishes stages used in request routing.`}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {linkedWorkflow ? (
+              <Badge
+                variant="secondary"
+                className="gap-1.5 bg-emerald-50 text-emerald-700"
+              >
+                <Link2 className="h-3 w-3" />
+                Linked: {linkedWorkflow.name}
+              </Badge>
+            ) : (
+              <Badge
+                variant="secondary"
+                className="gap-1.5 bg-amber-50 text-amber-700"
+              >
+                <GitBranch className="h-3 w-3" />
+                New workflow (save to link)
+              </Badge>
+            )}
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {linkedWorkflow ? (
-            <Badge variant="secondary" className="gap-1.5 bg-emerald-50 text-emerald-700">
-              <Link2 className="h-3 w-3" />
-              Linked: {linkedWorkflow.name}
-            </Badge>
-          ) : (
-            <Badge variant="secondary" className="gap-1.5 bg-amber-50 text-amber-700">
-              <GitBranch className="h-3 w-3" />
-              New workflow (save to link)
-            </Badge>
-          )}
-        </div>
-      </div>
+        }
+      />
 
       <WorkflowFlowDesigner
         key={linkedWorkflow?.id ?? "new"}

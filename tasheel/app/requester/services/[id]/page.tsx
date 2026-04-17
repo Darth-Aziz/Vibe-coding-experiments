@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import { useTasheelStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ServiceRequestFormFields } from "@/components/shared/service-request-form-fields";
 import {
@@ -13,8 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatSlaSummary, getCategoryColor } from "@/lib/utils";
-import { Clock, CheckCircle, ArrowRight, Circle } from "lucide-react";
+import { getFormFieldValidationError } from "@/lib/form-field-validation";
+import { QUEUE_LABELS } from "@/lib/assignment-queues";
+import { cn, formatSlaSummary, getCategoryColor } from "@/lib/utils";
+import Link from "next/link";
+import { Clock, CheckCircle, ArrowRight, Circle, FileQuestion } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 export default function ServiceRequestPage({
@@ -31,12 +35,25 @@ export default function ServiceRequestPage({
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [ticketNumber, setTicketNumber] = useState("");
-  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [assignedToName, setAssignedToName] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (!service) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">Service not found.</p>
+      <div className="py-12">
+        <EmptyState
+          icon={FileQuestion}
+          title="Service not found"
+          description="It may be unpublished, internal-only, or removed. Return to the catalog to pick another service."
+          action={
+            <Link
+              href="/requester"
+              className={cn(buttonVariants({ variant: "default", size: "sm" }))}
+            >
+              Back to catalog
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -47,22 +64,15 @@ export default function ServiceRequestPage({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const newErrors: Record<string, boolean> = {};
+    const newErrors: Record<string, string> = {};
     const sortedFields = [...service!.formFields].sort((a, b) => a.order - b.order);
     for (const field of sortedFields) {
-      if (!field.required) continue;
-      const v = formData[field.label];
-      let missing = false;
-      if (field.type === "checkbox") {
-        missing = !Array.isArray(v) || v.length === 0;
-      } else {
-        missing = v === undefined || v === null || v === "";
-      }
-      if (missing) newErrors[field.label] = true;
+      const msg = getFormFieldValidationError(field, formData[field.label]);
+      if (msg) newErrors[field.label] = msg;
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      toast.error("Please fill in all required fields");
+      toast.error("Please fix the highlighted fields");
       return;
     }
 
@@ -90,12 +100,17 @@ export default function ServiceRequestPage({
       updatedAt: now,
     });
     setTicketNumber(created.ticketNumber);
+    setAssignedToName(created.assignedToName ?? "");
     setShowSuccess(true);
   }
 
   function updateField(label: string, value: unknown) {
     setFormData((prev) => ({ ...prev, [label]: value }));
-    setErrors((prev) => ({ ...prev, [label]: false }));
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[label];
+      return next;
+    });
   }
 
   const sortedFields = [...service.formFields].sort((a, b) => a.order - b.order);
@@ -173,6 +188,16 @@ export default function ServiceRequestPage({
             <DialogDescription className="text-center">
               Your ticket number is{" "}
               <span className="font-mono text-lg font-bold text-foreground">{ticketNumber}</span>
+              {assignedToName ? (
+                <>
+                  <br />
+                  <span className="mt-2 inline-block text-foreground">
+                    Routed to <span className="font-medium">{assignedToName}</span>{" "}
+                    for triage (round-robin in the{" "}
+                    {QUEUE_LABELS[service.category]} queue).
+                  </span>
+                </>
+              ) : null}
               <br />
               You can track your request in &ldquo;My Requests&rdquo;.
             </DialogDescription>

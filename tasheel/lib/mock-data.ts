@@ -1,10 +1,19 @@
 import { Service, Workflow, ServiceRequest, User } from "./types";
+import { ADMIN_PERSONA } from "./admin-persona";
 import { extractStagesFromFlow, getDefaultLaptopFlowDefinition } from "./workflow-graph-utils";
 
 const laptopFlow = getDefaultLaptopFlowDefinition();
 
 export const mockUsers: User[] = [
-  { id: "usr_sarah", name: "Sarah Mitchell", email: "sarah@tasheel.com", role: "admin", department: "Platform", jobTitle: "Platform Administrator", isActive: true },
+  {
+    id: ADMIN_PERSONA.id,
+    name: ADMIN_PERSONA.name,
+    email: ADMIN_PERSONA.email,
+    role: "admin",
+    department: "Platform",
+    jobTitle: ADMIN_PERSONA.jobTitle,
+    isActive: true,
+  },
   { id: "usr_ahmed", name: "Ahmed Al-Rashid", email: "ahmed@company.com", role: "requester", department: "Engineering", jobTitle: "Software Engineer", managerId: "usr_mohammed", managerName: "Mohammed Hassan", isActive: true },
   { id: "usr_mohammed", name: "Mohammed Hassan", email: "mohammed@company.com", role: "approver", department: "Engineering", jobTitle: "Engineering Manager", managerId: "usr_omar", managerName: "Omar Khalid", isActive: true },
   { id: "usr_layla", name: "Layla Ahmad", email: "layla@company.com", role: "approver", department: "HR", jobTitle: "HR Manager", isActive: true },
@@ -191,7 +200,7 @@ export const mockServices: Service[] = [
     formFields: [
       { id: "f1", type: "select", label: "Room Preference", placeholder: "Select room", required: true, options: ["Room A (6 pax)", "Room B (12 pax)", "Board Room (20 pax)", "Huddle Space (4 pax)"], order: 0 },
       { id: "f2", type: "date", label: "Date", required: true, order: 1 },
-      { id: "f3", type: "text", label: "Time Slot", placeholder: "e.g., 10:00 AM - 11:00 AM", required: true, order: 2 },
+      { id: "f3", type: "time", label: "Start Time", placeholder: "", required: true, order: 2 },
       { id: "f4", type: "number", label: "Number of Attendees", placeholder: "How many people?", required: true, order: 3 },
       { id: "f5", type: "checkbox", label: "AV Equipment Needed", required: false, options: ["Projector", "Video Conferencing", "Whiteboard", "Microphone"], order: 4 },
     ],
@@ -245,6 +254,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-01T10:30:00Z",
     updatedAt: "2026-04-01T14:00:00Z",
+    queueKey: "it",
+    assignedToId: "usr_fatima",
+    assignedToName: "Fatima Al-Saud",
   },
   {
     id: "req-2",
@@ -266,6 +278,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-03-28T09:00:00Z",
     updatedAt: "2026-03-28T11:30:00Z",
+    queueKey: "it",
+    assignedToId: ADMIN_PERSONA.id,
+    assignedToName: ADMIN_PERSONA.name,
   },
   {
     id: "req-3",
@@ -289,6 +304,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-03-20T08:00:00Z",
     updatedAt: "2026-03-20T10:30:00Z",
+    queueKey: "hr",
+    assignedToId: "usr_layla",
+    assignedToName: "Layla Ahmad",
   },
   {
     id: "req-4",
@@ -309,6 +327,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-10T09:00:00Z",
     updatedAt: "2026-04-10T09:00:00Z",
+    queueKey: "it",
+    assignedToId: null,
+    assignedToName: null,
   },
   {
     id: "req-5",
@@ -331,6 +352,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-08T11:00:00Z",
     updatedAt: "2026-04-08T13:00:00Z",
+    queueKey: "facilities",
+    assignedToId: "usr_maryam",
+    assignedToName: "Maryam Al-Otaibi",
   },
   {
     id: "req-6",
@@ -355,6 +379,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-05T09:00:00Z",
     updatedAt: "2026-04-06T09:00:00Z",
+    queueKey: "hr",
+    assignedToId: ADMIN_PERSONA.id,
+    assignedToName: ADMIN_PERSONA.name,
   },
   {
     id: "req-7",
@@ -378,6 +405,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-09T08:00:00Z",
     updatedAt: "2026-04-09T09:00:00Z",
+    queueKey: "facilities",
+    assignedToId: null,
+    assignedToName: null,
   },
   {
     id: "req-8",
@@ -404,6 +434,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-03-25T09:00:00Z",
     updatedAt: "2026-03-25T15:00:00Z",
+    queueKey: "it",
+    assignedToId: "usr_fatima",
+    assignedToName: "Fatima Al-Saud",
   },
   {
     id: "req-9",
@@ -424,6 +457,9 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-14T10:00:00Z",
     updatedAt: "2026-04-14T10:00:00Z",
+    queueKey: "it",
+    assignedToId: "usr_fatima",
+    assignedToName: "Fatima Al-Saud",
   },
   {
     id: "req-10",
@@ -447,5 +483,8 @@ export const mockRequests: ServiceRequest[] = [
     ],
     createdAt: "2026-04-12T16:00:00Z",
     updatedAt: "2026-04-12T17:30:00Z",
+    queueKey: "hr",
+    assignedToId: "usr_hassan",
+    assignedToName: "Hassan Malik",
   },
 ];

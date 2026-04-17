@@ -1,3 +1,11 @@
+# Agent tooling (Tasheel folder)
+
+The **Tasheel multi-agent roster**, RACI matrix, and orchestration rules live at the **repository root**:
+
+**[`AGENTS.md`](../AGENTS.md)**
+
+The block below is **Next.js-specific** guidance for tools that read this file from `tasheel/`:
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 

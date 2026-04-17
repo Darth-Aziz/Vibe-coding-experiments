@@ -7,15 +7,28 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import Link from "next/link";
 import {
-  ArrowLeft, ChevronRight, CheckCircle, Circle, Clock, XCircle, Ban,
+  CheckCircle, Circle, Clock, XCircle, Ban,
   ArrowRight, MessageSquare, Timer,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { PageHeader } from "@/components/shared/page-header";
+import { ADMIN_PERSONA } from "@/lib/admin-persona";
+import {
+  getAssigneeOptionsForRequest,
+  QUEUE_LABELS,
+  resolveRequestQueue,
+} from "@/lib/assignment-queues";
 import { toast } from "sonner";
 
 export default function AdminRequestDetailPage({
@@ -29,6 +42,7 @@ export default function AdminRequestDetailPage({
   const workflows = useTasheelStore((s) => s.workflows);
   const advanceRequest = useTasheelStore((s) => s.advanceRequest);
   const rejectRequest = useTasheelStore((s) => s.rejectRequest);
+  const reassignRequest = useTasheelStore((s) => s.reassignRequest);
 
   const addRequestComment = useTasheelStore((s) => s.addRequestComment);
 
@@ -49,6 +63,7 @@ export default function AdminRequestDetailPage({
     );
   }
 
+  const assignAgents = getAssigneeOptionsForRequest(request);
   const service = services.find((s) => s.id === request.serviceId);
   const workflow = workflows.find((w) => w.id === service?.workflowId);
   const stages = workflow?.stages.filter((s) => s.type !== "start") ?? [];
@@ -61,7 +76,7 @@ export default function AdminRequestDetailPage({
   const resolutionBreached = service ? elapsed > service.sla.resolutionTime : false;
 
   function handleAdvance() {
-    advanceRequest(request!.id, "Approved", "Sarah Mitchell", comment || undefined);
+    advanceRequest(request!.id, "Approved", ADMIN_PERSONA.name, comment || undefined);
     setComment("");
     toast.success("Request advanced to next stage");
   }
@@ -74,27 +89,76 @@ export default function AdminRequestDetailPage({
 
   function handleComment() {
     if (!comment.trim()) return;
-    addRequestComment(request!.id, comment, "Ahmed Al-Rashid");
+    addRequestComment(request!.id, comment, ADMIN_PERSONA.name);
     setComment("");
     toast.success("Comment added");
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Link href="/admin/requests">
-          <Button variant="ghost" size="sm" className="h-8">
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
-          </Button>
-        </Link>
-        <div className="h-5 w-px bg-border" />
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Link href="/admin/requests" className="transition-colors hover:text-foreground">Requests</Link>
-          <ChevronRight className="h-3.5 w-3.5" />
-          <span className="font-medium text-foreground">{request.ticketNumber}</span>
-        </div>
-      </div>
+      <PageHeader
+        breadcrumb={[
+          { label: "Requests", href: "/admin/requests" },
+          { label: request.ticketNumber },
+        ]}
+        title={request.ticketNumber}
+        description={`${request.serviceName} · Requested by ${request.requesterName} · ${formatDateTime(request.createdAt)}`}
+        actions={<StatusBadge status={request.status} />}
+      />
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Queue &amp; assignment</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <p className="text-xs text-muted-foreground">Team queue</p>
+              <p className="text-sm font-medium">
+                {QUEUE_LABELS[resolveRequestQueue(request, services)]}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Distribution</p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                New submissions are round-robin assigned within this queue.
+                You can override ownership below.
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Assignee</p>
+            <Select
+              value={request.assignedToId ?? "__none__"}
+              onValueChange={(v) => {
+                if (v === "__none__") {
+                  reassignRequest(request.id, { id: "", name: "" });
+                  toast.success("Released to unassigned queue");
+                  return;
+                }
+                const agent = assignAgents.find((a) => a.id === v);
+                if (agent) {
+                  reassignRequest(request.id, agent);
+                  toast.success(`Assigned to ${agent.name}`);
+                }
+              }}
+            >
+              <SelectTrigger className="w-full max-w-md">
+                <SelectValue placeholder="Select assignee" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">Unassigned</SelectItem>
+                {assignAgents.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.name}
+                    {a.id === ADMIN_PERSONA.id ? " (you)" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* SLA Breach Banner */}
       {isOpen && resolutionBreached && (
@@ -106,20 +170,6 @@ export default function AdminRequestDetailPage({
           </div>
         </div>
       )}
-
-      {/* Title + Actions */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">{request.ticketNumber}</h1>
-            <StatusBadge status={request.status} />
-          </div>
-          <p className="text-muted-foreground mt-1">{request.serviceName}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            by {request.requesterName} &middot; {formatDateTime(request.createdAt)}
-          </p>
-        </div>
-      </div>
 
       {/* Admin Action Bar */}
       {canAdvance && (

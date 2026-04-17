@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { useRouter } from "next/navigation";
+import {
+  AdminShellContext,
+} from "@/components/shared/admin-shell-context";
 import {
   Command,
   CommandInput,
@@ -19,7 +22,21 @@ import {
 } from "lucide-react";
 
 export function CommandPalette() {
-  const [open, setOpen] = useState(false);
+  const shell = useContext(AdminShellContext);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const controlled = shell != null;
+  const open = controlled ? shell.commandPaletteOpen : uncontrolledOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (controlled) {
+        shell.setCommandPaletteOpen(next);
+      } else {
+        setUncontrolledOpen(next);
+      }
+    },
+    [controlled, shell]
+  );
+
   const router = useRouter();
   const services = useTasheelStore((s) => s.services);
   const requests = useTasheelStore((s) => s.requests);
@@ -27,25 +44,38 @@ export function CommandPalette() {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((prev) => !prev);
+        if (controlled) {
+          shell.setCommandPaletteOpen(!shell.commandPaletteOpen);
+        } else {
+          setUncontrolledOpen((prev) => !prev);
+        }
       }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [controlled, shell]);
 
   const go = useCallback(
     (path: string) => {
       setOpen(false);
       router.push(path);
     },
-    [router]
+    [router, setOpen]
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (controlled) {
+          shell.setCommandPaletteOpen(v);
+        } else {
+          setUncontrolledOpen(v);
+        }
+      }}
+    >
       <DialogContent className="p-0 max-w-lg" showCloseButton={false}>
         <Command className="rounded-lg">
           <CommandInput placeholder="Search services, requests, or navigate..." />

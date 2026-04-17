@@ -1,19 +1,11 @@
 # Vibe-coding-experiments
 
-Personal workspace for **Tasheel (تسهيل)** and Cursor/agent automation experiments. The production-style app lives under **`tasheel/`**.
+Personal workspace for **Tasheel (تسهيل)** and Cursor/agent automation. The **application** lives in **`tasheel/`**; everything else is docs, tooling, or reference.
 
-**Suggested GitHub “About” description (copy-paste):**  
-*Enterprise-style service management demo: Next.js admin + requester portals, Zustand, BPMN-style workflows (React Flow), service studio wizard.*
+**Suggested GitHub “About” description:**  
+*Enterprise-style service management demo: Next.js admin + requester portals, Zustand, workflow designer (React Flow), service studio wizard.*
 
-## Repository layout
-
-| Path | Purpose |
-|------|--------|
-| **`tasheel/`** | Next.js 16 app — Tasheel platform (admin catalog, service studio, workflows, requester catalog & requests). |
-| **`AGENTS.md`** | Tasheel multi-agent roster and workflow (reference for contributors). |
-| **`.cursor/`** | Cursor rules, agent definitions, sprint artifacts — keeps AI-assisted work consistent with the project. |
-
-## Quick start (Tasheel app)
+## Quick start
 
 ```bash
 cd tasheel
@@ -21,32 +13,52 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:3000**. Use the UI to switch between **Admin** and **Requester** portals.
+Open **http://localhost:3000**. Switch between **Admin** and **Requester** from the UI.
 
 ```bash
-npm run lint    # ESLint (scope: app, components, lib — see tasheel/package.json)
-npm run build   # Production build
+npx eslint "app" "components" "lib" --max-warnings 0   # from tasheel/
+npm run build
 ```
 
-## Branches
+## Documentation
 
-- **`staging`** — Integration branch with the full `tasheel/` tree and docs (default for active work).
-- **`commit-changes`** — Legacy local branch (optional).
+| Resource | Description |
+|----------|-------------|
+| **[`docs/README.md`](docs/README.md)** | Documentation index |
+| **[`docs/repository-map.md`](docs/repository-map.md)** | Folder-by-folder map |
+| **[`docs/contributing.md`](docs/contributing.md)** | Setup, branches, checks |
+| **[`tasheel/docs/prd/`](tasheel/docs/prd/README.md)** | Admin portal PRD |
+| **[`tasheel/README.md`](tasheel/README.md)** | App structure and scripts |
+| **[`AGENTS.md`](AGENTS.md)** | Multi-agent roster and workflow |
+
+## Repository layout (short)
+
+| Path | Purpose |
+|------|--------|
+| **`tasheel/`** | Next.js app — Tasheel platform |
+| **`docs/`** | Curated guides and maps |
+| **`AGENTS.md`** | Agent team reference |
+| **`.cursor/`** | Cursor rules, agents, skills, sprint artifacts ([`.cursor/README.md`](.cursor/README.md)) |
+| **`.devcontainer/`** | Optional Codespaces / Dev Containers |
 
 ## Tech stack (Tasheel)
 
-- Next.js (App Router), TypeScript, Tailwind, shadcn/ui  
-- Zustand (persisted) for app state  
-- `@xyflow/react` for workflow designer  
-- `bpmn-js` / BPMN assets where applicable  
+- Next.js (App Router), TypeScript (strict), Tailwind, shadcn/ui  
+- Zustand with persistence for in-browser state  
+- `@xyflow/react` for the workflow designer  
+- `@dnd-kit` for form builder drag-and-drop  
 
-Details: **`tasheel/README.md`** and **`tasheel/01-architecture.md`** (if present).
+Details: **`tasheel/README.md`**, **`tasheel/01-architecture.md`**.
+
+## Branches
+
+- **`staging`** — Main integration branch for active work (verify default on GitHub).
+- **`main`** — Optional release mirror; may lag until you promote from `staging`.
 
 ## Git / GitHub
 
-- Remote: `git@github.com-darth:Darth-Aziz/Vibe-coding-experiments.git` (SSH host alias; see your `~/.ssh/config`).
-- Deploy keys or account SSH keys must have **push** access to update this repo.
+Use **SSH** or **HTTPS** with credentials that can push to your fork or `Darth-Aziz/Vibe-coding-experiments`. If you use an SSH host alias (e.g. `github.com-darth`), document it locally; do not commit secrets.
 
 ## License
 
-Unless otherwise noted in subfolders, treat as **private / all rights reserved** by the repository owner. Add a `LICENSE` file when you choose a public license.
+Unless otherwise noted, treat as **private / all rights reserved**. Add a `LICENSE` file when you choose a public license.

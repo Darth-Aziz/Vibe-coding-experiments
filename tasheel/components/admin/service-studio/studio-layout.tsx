@@ -230,7 +230,20 @@ export function StudioLayout({ existingService }: StudioLayoutProps) {
                 Services
               </Link>
               <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
-              <span className="truncate font-semibold text-foreground">{displayServiceName}</span>
+              {existingService ? (
+                <Link
+                  href={`/admin/services/${serviceId}`}
+                  className="min-w-0 truncate font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  {displayServiceName}
+                </Link>
+              ) : (
+                <span className="truncate font-medium text-foreground">
+                  {displayServiceName}
+                </span>
+              )}
+              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="shrink-0 text-muted-foreground">Studio</span>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">

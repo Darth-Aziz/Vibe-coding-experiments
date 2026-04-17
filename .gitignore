@@ -16,5 +16,26 @@ npm-debug.log*
 *.swp
 *.swo
 
-# Optional local scratch (uncomment if you never want these committed)
-# .tmp-awesome-cursor-skills/
+# Dependencies & build output (root-level tooling or accidental installs)
+node_modules/
+.turbo/
+dist/
+build/
+out/
+coverage/
+
+# Next.js (if ever run from repo root)
+.next/
+
+# Local scratch (skill installers, experiments)
+.tmp-awesome-cursor-skills/
+
+# OS / IDE
+Thumbs.db
+
+# Optional local reference exports (Vite/Figma bundles — not the Next app; see tasheel/REFERENCE.md)
+tasheel/service_LC/
+tasheel/design/
+
+# TypeScript
+*.tsbuildinfo

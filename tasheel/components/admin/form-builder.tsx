@@ -30,6 +30,7 @@ import {
   CircleDot,
   CheckSquare,
   Calendar,
+  Clock,
   Upload,
   FileText,
   Search,
@@ -38,6 +39,8 @@ import {
   ChevronDown,
   Settings,
   Eye,
+  Link2,
+  Phone,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -46,6 +49,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ServiceRequestFormFields } from "@/components/shared/service-request-form-fields";
+import { TasheelPhoneInput } from "@/components/shared/phone-input";
 import {
   Dialog,
   DialogContent,
@@ -76,6 +80,8 @@ const fieldCategories: { name: string; items: FieldTypeDef[] }[] = [
       { type: "textarea", label: "Long Text", icon: AlignLeft, description: "Multi-line text" },
       { type: "number", label: "Number", icon: Hash, description: "Numeric values" },
       { type: "email", label: "Email", icon: Mail, description: "Email address" },
+      { type: "url", label: "URL", icon: Link2, description: "Website or link" },
+      { type: "tel", label: "Phone", icon: Phone, description: "Phone number" },
     ],
   },
   {
@@ -87,9 +93,10 @@ const fieldCategories: { name: string; items: FieldTypeDef[] }[] = [
     ],
   },
   {
-    name: "Advanced",
+    name: "Date & files",
     items: [
-      { type: "date", label: "Date Picker", icon: Calendar, description: "Date selection" },
+      { type: "date", label: "Date", icon: Calendar, description: "Calendar date" },
+      { type: "time", label: "Time", icon: Clock, description: "Time of day" },
       { type: "file", label: "File Upload", icon: Upload, description: "Upload documents" },
     ],
   },
@@ -227,10 +234,17 @@ function FieldCanvasBlock({
                 </div>
               ))}
             </div>
+          ) : field.type === "time" ? (
+            <div className="relative">
+              <div className="flex h-10 w-full items-center rounded-md border border-border/50 bg-background/50 py-2 pl-10 pr-3 shadow-sm">
+                <span className="text-sm text-muted-foreground">--:--</span>
+              </div>
+              <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
+            </div>
           ) : field.type === "date" ? (
             <div className="relative">
               <div className="flex h-10 w-full items-center rounded-md border border-border/50 bg-background/50 py-2 pl-10 pr-3 shadow-sm">
-                <span className="text-sm text-muted-foreground">MM/DD/YYYY</span>
+                <span className="text-sm text-muted-foreground">YYYY-MM-DD</span>
               </div>
               <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
             </div>
@@ -241,10 +255,27 @@ function FieldCanvasBlock({
                 Click to upload or drag and drop
               </span>
             </div>
+          ) : field.type === "tel" ? (
+            <TasheelPhoneInput
+              value=""
+              onChange={() => {}}
+              defaultCountry={field.phoneDefaultCountry}
+              disabled
+              placeholder="Phone number"
+              className="border-border/50 bg-background/50"
+            />
           ) : (
             <Input
               readOnly
-              type={field.type === "number" ? "number" : field.type === "email" ? "email" : "text"}
+              type={
+                field.type === "number"
+                  ? "number"
+                  : field.type === "email"
+                    ? "email"
+                    : field.type === "url"
+                      ? "url"
+                      : "text"
+              }
               placeholder={field.placeholder || "Enter your answer..."}
               className="border-border/50 bg-background/50 shadow-sm"
             />
@@ -296,6 +327,7 @@ export function FormBuilder({ fields, onFieldsChange, previewTitle }: FormBuilde
         ? ["Option 1", "Option 2", "Option 3"]
         : undefined,
       order: fields.length,
+      ...(type === "tel" ? { phoneDefaultCountry: "SA" } : {}),
     };
     onFieldsChange([...fields, newField]);
     setSelectedFieldId(newField.id);

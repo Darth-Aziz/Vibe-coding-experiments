@@ -4,19 +4,17 @@ import { use } from "react";
 import { useTasheelStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
-  ArrowLeft,
   GitBranch,
   Circle,
   Diamond,
   ArrowRight,
   Link2,
   User,
-  ChevronRight,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/shared/page-header";
 
 function StageIcon({ type }: { type: string }) {
   if (type === "start")
@@ -66,20 +64,14 @@ export default function EditWorkflowPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/admin/workflows">
-          <Button variant="ghost" size="sm" className="h-8">
-            <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
-          </Button>
-        </Link>
-        <div className="h-5 w-px bg-border" />
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Link href="/admin/workflows" className="hover:text-foreground transition-colors">Workflows</Link>
-          <ChevronRight className="h-3.5 w-3.5" />
-          <span className="text-foreground font-medium">{workflow.name}</span>
-        </div>
-      </div>
+      <PageHeader
+        breadcrumb={[
+          { label: "Workflows", href: "/admin/workflows" },
+          { label: workflow.name },
+        ]}
+        title={workflow.name}
+        description={workflow.description}
+      />
 
       {/* Info cards */}
       <div className="grid grid-cols-4 gap-4">

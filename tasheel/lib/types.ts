@@ -1,3 +1,10 @@
+/** Workspace preferences persisted with the demo store. */
+export interface WorkspaceSettings {
+  platformName: string;
+  ticketPrefix: string;
+  defaultResponseSlaHours: number;
+}
+
 export type ServiceCategory = 'it' | 'hr' | 'facilities' | 'finance' | 'general';
 
 /** Who can see the service in the requester catalog (when published). */
@@ -7,7 +14,19 @@ export type RequestStatus = 'submitted' | 'in_review' | 'approved' | 'rejected' 
 
 export interface FormField {
   id: string;
-  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'date' | 'file' | 'number' | 'email';
+  type:
+    | 'text'
+    | 'textarea'
+    | 'select'
+    | 'radio'
+    | 'checkbox'
+    | 'date'
+    | 'time'
+    | 'file'
+    | 'number'
+    | 'email'
+    | 'url'
+    | 'tel';
   label: string;
   /** Optional longer helper shown between label and control (spec). */
   description?: string;
@@ -16,6 +35,20 @@ export interface FormField {
   required: boolean;
   options?: string[];
   order: number;
+  /** Min character length (text-like types). */
+  minLength?: number;
+  /** Max character length (text-like types). */
+  maxLength?: number;
+  /** Min value for number fields. */
+  min?: number;
+  /** Max value for number fields. */
+  max?: number;
+  /** Step for number fields. */
+  step?: number;
+  /**
+   * Default country (ISO 3166-1 alpha-2) for `tel` fields — flag + dial code in the picker.
+   */
+  phoneDefaultCountry?: string;
 }
 
 export interface Service {
@@ -79,6 +112,11 @@ export interface ServiceRequest {
   history: RequestHistoryEntry[];
   createdAt: string;
   updatedAt: string;
+  /** Owning queue (usually matches service category). */
+  queueKey?: ServiceCategory;
+  /** Agent currently responsible (round-robin or manual). Null/omit = unassigned pool. */
+  assignedToId?: string | null;
+  assignedToName?: string | null;
 }
 
 export interface User {

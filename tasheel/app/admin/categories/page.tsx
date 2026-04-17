@@ -7,6 +7,7 @@ import { getCategoryColor } from "@/lib/utils";
 import {
   Laptop, UserPlus, Wrench, CreditCard, FileText,
 } from "lucide-react";
+import { PageHeader } from "@/components/shared/page-header";
 
 const categoryMeta: Record<string, { label: string; icon: React.ElementType; description: string }> = {
   it: { label: "IT Support", icon: Laptop, description: "Technology and software services" },
@@ -27,15 +28,18 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Categories</h1>
-        <p className="text-sm text-muted-foreground mt-1">Organize your services into categories</p>
-      </div>
+      <PageHeader
+        title="Categories"
+        description="Each service maps to a category for admin filters and requester browsing."
+      />
 
       <div className="space-y-3">
         {categories.map((cat) => (
-          <Card key={cat.key} className="hover:shadow-sm transition-shadow">
-            <CardContent className="p-4 flex items-center justify-between">
+          <Card
+            key={cat.key}
+            className="border shadow-sm transition-shadow hover:shadow-md"
+          >
+            <CardContent className="flex items-center justify-between p-6">
               <div className="flex items-center gap-4">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${getCategoryColor(cat.key)} bg-opacity-20`}>
                   <cat.icon className="h-5 w-5" />

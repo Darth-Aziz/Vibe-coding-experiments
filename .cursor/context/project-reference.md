@@ -6,11 +6,11 @@ Tasheel is an enterprise service management platform with two portals:
 - Requester portal for browsing services, submitting requests, and tracking progress
 
 ## Core Tech Stack
-- Next.js 14 (App Router)
+- Next.js (App Router; see `tasheel/package.json` for current major)
 - TypeScript (strict mode)
 - Tailwind CSS + shadcn/ui
 - Zustand with localStorage persistence
-- bpmn-js for workflow modeling
+- `@xyflow/react` for workflow designer UI; BPMN reference assets may live under `tasheel/BPMN/`
 - @dnd-kit for drag-and-drop form builder
 
 ## Repository Structure

@@ -4,14 +4,15 @@ import { use, createElement } from "react";
 import { useTasheelStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
 import Link from "next/link";
 import {
   Pencil, FileText, GitBranch, Inbox, CheckCircle, Timer,
-  ArrowRight, Circle,
+  ArrowRight, Circle, FileQuestion,
 } from "lucide-react";
-import { getCategoryColor, formatDate } from "@/lib/utils";
+import { cn, getCategoryColor, formatDate } from "@/lib/utils";
+import { EmptyState } from "@/components/shared/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { toast } from "sonner";
 import * as LucideIcons from "lucide-react";
@@ -38,8 +39,20 @@ export default function ServiceOverviewPage({
 
   if (!service) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">Service not found.</p>
+      <div className="py-12">
+        <EmptyState
+          icon={FileQuestion}
+          title="Service not found"
+          description="This ID is not in the catalog. Return to the list or create a new service."
+          action={
+            <Link
+              href="/admin/services"
+              className={cn(buttonVariants({ variant: "default", size: "sm" }))}
+            >
+              All services
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -60,7 +73,7 @@ export default function ServiceOverviewPage({
     <div className="space-y-6">
       <PageHeader
         title={service.name}
-        subtitle={service.description}
+        description={service.description}
         breadcrumb={[
           { label: "Services", href: "/admin/services" },
           { label: service.name },

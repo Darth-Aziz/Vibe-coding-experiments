@@ -11,10 +11,11 @@ export function generateId(): string {
   return Math.random().toString(36).substring(2, 11)
 }
 
-export function generateTicketNumber(): string {
+export function generateTicketNumber(prefix = "TSH"): string {
   const year = new Date().getFullYear()
   const seq = Math.floor(Math.random() * 9000) + 1000
-  return `TSH-${year}-${seq}`
+  const clean = prefix.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() || "TSH"
+  return `${clean}-${year}-${seq}`
 }
 
 export function formatDate(date: string | Date): string {

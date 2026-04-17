@@ -12,6 +12,8 @@ import {
   Link2,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/shared/page-header";
+import { EmptyState } from "@/components/shared/empty-state";
 
 function StageTypeDot({ type }: { type: string }) {
   if (type === "start")
@@ -33,14 +35,10 @@ export default function WorkflowsListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Workflow Templates</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {workflows.length} workflow{workflows.length !== 1 ? "s" : ""} defined
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Workflow templates"
+        description={`${workflows.length} workflow${workflows.length !== 1 ? "s" : ""} — open a card to inspect stages or attach to a service in the studio.`}
+      />
 
       <div className="grid gap-4">
         {workflows.map((wf) => {
@@ -49,13 +47,13 @@ export default function WorkflowsListPage() {
 
           return (
             <Link key={wf.id} href={`/admin/workflows/${wf.id}`}>
-              <Card className="cursor-pointer transition-all hover:border-border hover:shadow-md group">
-                <CardContent className="p-5">
+              <Card className="group cursor-pointer border shadow-sm transition-all hover:border-primary/20 hover:shadow-md">
+                <CardContent className="p-6">
                   <div className="flex items-start justify-between gap-6">
                     {/* Left — info */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2.5 mb-1">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+                      <div className="mb-1 flex items-center gap-2.5">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                           <GitBranch className="h-4 w-4" />
                         </div>
                         <div>
@@ -116,13 +114,11 @@ export default function WorkflowsListPage() {
         })}
 
         {workflows.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <GitBranch className="mb-3 h-12 w-12 text-muted-foreground/30" />
-            <p className="text-sm font-medium text-muted-foreground">No workflows yet</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Create a service and design a workflow for it
-            </p>
-          </div>
+          <EmptyState
+            icon={GitBranch}
+            title="No workflow templates"
+            description="Seed data normally includes templates. Reset or import data under Settings if this list is empty."
+          />
         )}
       </div>
     </div>

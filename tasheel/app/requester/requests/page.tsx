@@ -18,12 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { Eye, Inbox, Search } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/shared/page-header";
+import { EmptyState } from "@/components/shared/empty-state";
 
 const statuses = [
   { value: "all", label: "All Statuses" },
@@ -56,32 +58,40 @@ export default function MyRequestsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">My Requests</h1>
-        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <div className="relative w-full sm:w-56">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ticket or service…"
-              className="h-10 bg-background pl-9"
-            />
+      <PageHeader
+        title="My requests"
+        description="Track tickets you have submitted and filter by status."
+        actions={
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <div className="relative w-full sm:w-56">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search ticket or service…"
+                className="h-9 bg-background pl-9"
+              />
+            </div>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v ?? "all")}
+            >
+              <SelectTrigger className="h-9 w-full sm:w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "all")}>
-            <SelectTrigger className="w-full sm:w-44">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {statuses.map((s) => (
-                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+        }
+      />
 
-      <Card>
+      <Card className="border shadow-sm">
         <CardHeader>
           <CardTitle>
             {statusFilter === "all" ? "All Requests" : `${statuses.find(s => s.value === statusFilter)?.label} Requests`}
@@ -89,13 +99,24 @@ export default function MyRequestsPage() {
         </CardHeader>
         <CardContent>
           {sorted.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <Inbox className="mb-3 h-12 w-12 text-muted-foreground/40" />
-              <p className="text-sm font-medium text-foreground">No requests yet</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Browse the <Link href="/requester" className="text-primary hover:underline">service catalog</Link> to get started.
-              </p>
-            </div>
+            <EmptyState
+              className="border-0 bg-muted/20 py-12"
+              icon={Inbox}
+              title="No requests match"
+              description={
+                requests.length === 0
+                  ? "Submit a request from the catalog to see it listed here."
+                  : "Try another status or clear your search."
+              }
+              action={
+                <Link
+                  href="/requester"
+                  className={cn(buttonVariants({ variant: "default", size: "sm" }))}
+                >
+                  Browse catalog
+                </Link>
+              }
+            />
           ) : (
             <Table>
               <TableHeader>

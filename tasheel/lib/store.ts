@@ -1,8 +1,25 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Service, Workflow, ServiceRequest, RequestStatus } from "./types";
+import {
+  Service,
+  Workflow,
+  ServiceRequest,
+  RequestStatus,
+  WorkspaceSettings,
+  ServiceCategory,
+} from "./types";
 import { mockServices, mockWorkflows, mockRequests } from "./mock-data";
 import { generateId, generateTicketNumber } from "./utils";
+import { ADMIN_PERSONA } from "./admin-persona";
+import { pickNextAssignee } from "./assignment-queues";
+
+const initialRoundRobinCursor: Record<ServiceCategory, number> = {
+  it: 0,
+  hr: 0,
+  facilities: 0,
+  finance: 0,
+  general: 0,
+};
 
 interface TasheelStore {
   services: Service[];
@@ -20,18 +37,38 @@ interface TasheelStore {
   linkWorkflowToService: (serviceId: string, workflowId: string) => void;
 
   requests: ServiceRequest[];
-  submitRequest: (request: Omit<ServiceRequest, "id" | "ticketNumber">) => ServiceRequest;
+  submitRequest: (
+    request: Omit<
+      ServiceRequest,
+      "id" | "ticketNumber" | "queueKey" | "assignedToId" | "assignedToName"
+    >
+  ) => ServiceRequest;
   advanceRequest: (requestId: string, action: string, actorName?: string, comment?: string) => void;
   rejectRequest: (requestId: string, comment: string, actorName?: string) => void;
-  reassignRequest: (requestId: string, newAssignee: string, actorName?: string) => void;
+  reassignRequest: (
+    requestId: string,
+    assignee: { id: string; name: string },
+    actorName?: string
+  ) => void;
   cancelRequest: (requestId: string, reason: string, actorName?: string) => void;
   addRequestComment: (requestId: string, comment: string, actor: string) => void;
 
   currentPortal: "admin" | "requester";
   setPortal: (portal: "admin" | "requester") => void;
 
+  workspaceSettings: WorkspaceSettings;
+  setWorkspaceSettings: (updates: Partial<WorkspaceSettings>) => void;
+
+  assignmentRoundRobinCursor: Record<ServiceCategory, number>;
+
   resetToDefaults: () => void;
 }
+
+const defaultWorkspaceSettings: WorkspaceSettings = {
+  platformName: "Tasheel",
+  ticketPrefix: "TSH",
+  defaultResponseSlaHours: 4,
+};
 
 export const useTasheelStore = create<TasheelStore>()(
   persist(
@@ -122,16 +159,31 @@ export const useTasheelStore = create<TasheelStore>()(
       requests: mockRequests,
 
       submitRequest: (request) => {
+        const state = get();
+        const service = state.services.find((s) => s.id === request.serviceId);
+        const category: ServiceCategory = service?.category ?? "general";
+        const cursor = state.assignmentRoundRobinCursor[category] ?? 0;
+        const { agent, nextCursor } = pickNextAssignee(category, cursor);
+        const prefix = state.workspaceSettings.ticketPrefix;
         const newRequest: ServiceRequest = {
           ...request,
           id: generateId(),
-          ticketNumber: generateTicketNumber(),
+          ticketNumber: generateTicketNumber(prefix),
+          queueKey: category,
+          assignedToId: agent.id,
+          assignedToName: agent.name,
         };
-        set((state) => ({ requests: [...state.requests, newRequest] }));
+        set((s) => ({
+          requests: [...s.requests, newRequest],
+          assignmentRoundRobinCursor: {
+            ...s.assignmentRoundRobinCursor,
+            [category]: nextCursor,
+          },
+        }));
         return newRequest;
       },
 
-      advanceRequest: (requestId, action, actorName = "Sarah Mitchell", comment) => {
+      advanceRequest: (requestId, action, actorName = ADMIN_PERSONA.name, comment) => {
         const state = get();
         const request = state.requests.find((r) => r.id === requestId);
         if (!request) return;
@@ -176,7 +228,7 @@ export const useTasheelStore = create<TasheelStore>()(
         }));
       },
 
-      rejectRequest: (requestId, comment, actorName = "Sarah Mitchell") => {
+      rejectRequest: (requestId, comment, actorName = ADMIN_PERSONA.name) => {
         set((state) => ({
           requests: state.requests.map((r) =>
             r.id === requestId
@@ -201,19 +253,24 @@ export const useTasheelStore = create<TasheelStore>()(
         }));
       },
 
-      reassignRequest: (requestId, newAssignee, actorName = "Sarah Mitchell") => {
+      reassignRequest: (requestId, assignee, actorName = ADMIN_PERSONA.name) => {
+        const released = !assignee.id;
         set((state) => ({
           requests: state.requests.map((r) =>
             r.id === requestId
               ? {
                   ...r,
+                  assignedToId: released ? null : assignee.id,
+                  assignedToName: released ? null : assignee.name,
                   updatedAt: new Date().toISOString(),
                   history: [
                     ...r.history,
                     {
                       stageId: r.currentStage,
                       stageName: "Reassigned",
-                      action: `Reassigned to ${newAssignee}`,
+                      action: released
+                        ? "Released to unassigned queue"
+                        : `Assigned to ${assignee.name}`,
                       actor: actorName,
                       timestamp: new Date().toISOString(),
                     },
@@ -224,7 +281,7 @@ export const useTasheelStore = create<TasheelStore>()(
         }));
       },
 
-      cancelRequest: (requestId, reason, actorName = "Sarah Mitchell") => {
+      cancelRequest: (requestId, reason, actorName = ADMIN_PERSONA.name) => {
         set((state) => ({
           requests: state.requests.map((r) =>
             r.id === requestId
@@ -276,11 +333,22 @@ export const useTasheelStore = create<TasheelStore>()(
       currentPortal: "admin",
       setPortal: (portal) => set({ currentPortal: portal }),
 
+      workspaceSettings: { ...defaultWorkspaceSettings },
+
+      setWorkspaceSettings: (updates) =>
+        set((state) => ({
+          workspaceSettings: { ...state.workspaceSettings, ...updates },
+        })),
+
+      assignmentRoundRobinCursor: { ...initialRoundRobinCursor },
+
       resetToDefaults: () =>
         set({
           services: mockServices,
           workflows: mockWorkflows,
           requests: mockRequests,
+          workspaceSettings: { ...defaultWorkspaceSettings },
+          assignmentRoundRobinCursor: { ...initialRoundRobinCursor },
         }),
     }),
     {

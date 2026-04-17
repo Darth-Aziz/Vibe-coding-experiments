@@ -42,13 +42,14 @@ npx eslint "app" "components" "lib" --max-warnings 0
 - `lib/types.ts` — TypeScript contracts  
 - `lib/mock-data.ts` — Seed services, workflows, requests  
 
-Design/reference bundles may appear under `service_LC/`, `desgin/`, or `BPMN/`; the **active app** is the Next.js tree above. `tsconfig.json` excludes `service_LC` from typechecking so `next build` stays clean.
+Optional **local-only** reference trees **`design/`** and **`service_LC/`** (Vite/Figma exports) are **gitignored**; see **`REFERENCE.md`**. Curated notes live under **`BPMN/`**. The **active app** is the Next.js tree above. `tsconfig.json` excludes `design/` and `service_LC` from typechecking; ESLint ignores them too.
 
 ## Documentation
 
-- Repo root **`../README.md`** — monorepo overview  
-- **`AGENTS.md`** (repo root) — agent team and skills map  
-- **`01-architecture.md`**, **`02-cursor-prompts.md`** — additional context if present  
+- Repo root **`../README.md`** — workspace overview  
+- **`../docs/README.md`** — documentation index and maps  
+- **`../AGENTS.md`** — agent team and skills map  
+- **`01-architecture.md`**, **`02-cursor-prompts.md`**, **`03-figma-design-spec.md`**, **`04-github-setup.md`** — specs next to the app  
 
 ## License
 
